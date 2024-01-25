@@ -1,0 +1,40 @@
+\begin{algorithm}[!hbt]
+\caption{Parallel Static PageRank.}
+\label{alg:prst}
+\begin{algorithmic}[1]
+
+\Statex
+
+\Function{$\text{Static}_{\text{WBPR}}$}{$G^t$}
+  \State $R_{new} \gets R \gets \{1/|V^t|\}$
+  \ForAll{$i \in [0 .. MAX\_ITERATIONS)$}
+    \ForAll{$v \in V^t$ \textbf{in parallel}}
+      \State $r \gets (1 - \alpha)/|V^t|$
+      \ForAll{$u \in G^t.in(v)$}
+        \State $r \gets r + \alpha * R[u] / |G^t.out(u)|$
+      \EndFor
+      \State $\Delta r \gets |r - R[v]|$ \textbf{;} $R_{new}[v] \gets r$
+    \EndFor
+    \State \textbf{wait for all threads} (implicit barrier)
+    \State $\Delta R \gets l_\infty Norm(R, R_{new})$ \textbf{in parallel}
+    \State $swap(R_{new}, R)$
+    \State $\rhd$ Ranks converged?
+    \If{$\Delta R \le \tau$} \textbf{break}
+    \EndIf
+  \EndFor
+  \Return{$R$}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+%% Requires (parameters):
+% G(V, E): a directed unweighted graph
+% R: initial ranks (1/N for static)
+
+%% Parameter values:
+% MAX\_ITERATIONS = 500
+% DAMPING\_FACTOR = 0.85
+% TOLERANCE = 10^-10

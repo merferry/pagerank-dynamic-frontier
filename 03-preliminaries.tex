@@ -1,0 +1,49 @@
+\subsection{PageRank algorithm}
+\label{sec:pagerank}
+
+The PageRank, $R[v]$, of a vertex $v \in V$ in the graph $G(V, E)$, represents its \textit{importance} and is based on the number of incoming links and their significance. Equation \ref{eq:pr} shows how to calculate the PageRank of a vertex $v$ in the graph $G$, with $V$ as the set of vertices ($n = |V|$), $E$ as the set of edges ($m = |E|$), $G.in(v)$ as the incoming neighbors of vertex $v$, $G.out(v)$ as the outgoing neighbors of vertex $v$, and $\alpha$ as the damping factor. Each vertex starts with an initial PageRank of $1/n$. The \textit{power-iteration} method updates these values iteratively until the change is rank values is within a specified tolerance $\tau$ value (indicating that convergence has been achieved).
+
+\ignore{The \textit{random surfer model} is a conceptual framework for the PageRank algorithm, where a random surfer moves through the web by following the links on each page. The damping factor, $\alpha$, is the probability that the random surfer will continue to the next page along one of the links, instead of jumping to a random page on the web, and has a default value of $0.85$. The PageRank of each page can be seen as the long-term probability that the random surfer will visit that page, given that he starts on a random page and follows links according to the damping factor. The PageRank values can be calculated by finding the eigenvector of a transition matrix that represents the probabilities of moving from one page to another in the Markov Chain.}
+
+Presence of dead ends is an issue that arises when computing the PageRank of a graph. A dead end is a vertex with no out-link, which forces the random surfer to jump to a random page on the web. Or equivalently, a dead end contributes its rank among all the vertices in the graph (including itself). This introduces a global teleport rank contribution that must be computed every iteration, and can be considered an overhead. We resolve this issue by adding self-loops to all the vertices in the graph \cite{rank-andersen07, rank-langville06}.
+
+% In order to understand the PageRank algorithm, consider the \textbf{random surfer model} on a graph with several vertices and interconnecting edges. The surfer (such as you) initially visits a vertex at random. He then follows one of the edges leading to another vertex. After following some edges, the surfer would eventually decide to visit another vertex (at random). The probability of the random surfer being on a certain vertex is what the PageRank algorithm returns. This probability (or importance) of a vertex depends upon the importance of vertices pointing to it. This definition of PageRank is recursive, and takes the form of an \textbf{eigen-value problem}. Solving for PageRank thus requires multiple iterations of computation, which is known as the \textbf{power-iteration method}. Each computation is essentially a \textbf{(sparse) matrix multiplication}. A damping factor (of 0.85) is used to counter the effect of \textbf{spider-traps} (like self-loops), which can otherwise suck up all importance. \textbf{Dead-ends} (vertices with no out-links) are countered by effectively linking it to all vertices of the graph, which otherwise would leak out importance \cite{pr-leskovec19}. See Figure \ref{fig:about-pagerank} for example. The procedure to obtain such ranks is shown in Algorithm \ref{alg:pr-static}.
+
+% (\textbf{Markov chain}) (making Markov matrix column stochastic)
+
+% In order to understand the PageRank algorithm, consider this \textbf{random (web) surfer model}. Each web page is modelled as a vertex, and each hyperlink as an edge. The surfer (such as you) initially visits a web page at random. He then follows one of the links on the page, leading to another web page. After following some links, the surfer would eventually decide to visit another web page (at random). The probability of the random surfer being on a certain page is what the PageRank algorithm returns. This probability (or importance) of a web page depends upon the importance of web pages pointing to it (\textbf{Markov chain}). This definition of PageRank is recursive, and takes the form of an \textbf{eigen-value problem}. Solving for PageRank thus requires multiple iterations of computation, which is known as the \textbf{power-iteration method}. Each computation is essentially a \textbf{(sparse) matrix multiplication}. A damping factor (of 0.85) is used to counter the effect of \textbf{spider-traps} (like self-loops), which can otherwise suck up all importance. \textbf{Dead-ends} (web pages with no out-links) are countered by effectively linking it to all vertices of the graph (making Markov matrix column stochastic), which otherwise would leak out importance \cite{pr-leskovec19}. See \ref{fig:about-pagerank} for example. The procedure to obtain such ranks is shown in algorithm \ref{alg:pr-static}.
+
+\begin{equation}
+\label{eq:pr}
+    R[v] = \alpha \times \sum_{u \in G.in(v)} \frac{R[u]}{|G.out(u)|} + \frac{1 - \alpha}{n}
+\end{equation}
+
+
+
+
+\subsection{Dynamic Graphs}
+\label{sec:about-dynamic}
+
+A dynamic graph can be viewed as a sequence of graphs, where $G^t(V^t, E^t)$ denotes the graph at time step $t$. The changes between graphs $G^{t-1}(V^{t-1}, E^{t-1})$ and $G^t(V^t, E^t)$ at consecutive time steps $t-1$ and $t$ can be denoted as a batch update $\Delta^t$ at time step $t$ which consists of a set of edge deletions $\Delta^{t-} = \{(u, v)\ |\ u, v \in V\} = E^{t-1} \setminus E^t$ and a set of edge insertions $\Delta^{t+} = \{(u, v)\ |\ u, v \in V\} = E^t \setminus E^{t-1}$.
+
+\paragraph{Interleaving of graph update and computation:}
+
+Changes to the graph arrive in a batched manner, with updating of the graph and execution of the desired algorithm being interleaved (i.e., there is only one writer upon the graph at a given point of time). In case it is desirable to update the graph while an algorithm is still running, a snapshot of the graph needs to be obtained, upon which the desired algorithm may be executed. See for example Aspen graph processing framework which significantly minimizes the cost of obtaining a read-only snapshot of the graph \cite{graph-dhulipala19}.
+
+
+
+
+\subsection{Existing approaches for updating PageRank on Dynamic Graphs}
+
+\subsubsection{Naive-dynamic approach}
+\label{sec:about-naive}
+
+This is a straightforward approach of updating ranks of vertices in dynamic networks. Here, one initializes the ranks of vertices with ranks obtained from previous snapshot of the graph and runs the PageRank algorithm on all vertices. Rankings obtained through this method will be at least as accurate as those obtained through the static algorithm.\ignore{Zhang et al. \cite{rank-zhang17} have explored the \textit{Naive-dynamic} approach in the hybrid CPU-GPU setting.}
+% We also include the pseudocode for \textit{Naive-dynamic With-barrier} PageRank (\NaiWbar{}) for reference in Algorithm \ref{alg:with-barrier-naive-dynamic}.
+
+
+\subsubsection{Dynamic Traversal approach}
+\label{sec:about-traversal}
+
+Originally proposed by Desikan et al. \cite{rank-desikan05}, here one skips processing of vertices that have no chance of their rank being updated as a result of the given batch update. For each edge deletion/insertion $(u, v)$ in the batch update, one marks all the vertices reachable from the vertex $u$ in the graph $G^{t-1}$ or the graph $G^t$ as affected (using DFS or BFS).\ignore{Giri et al. \cite{rank-giri20} have explored the \textit{Dynamic Traversal} approach in the hybrid CPU-GPU setting. On the other hand, Banerjee et al. \cite{rank-sahu22} have explored this approach in the CPU and GPU settings separately where they compute the ranks of vertices in topological order of strongly connected components (SCCs) to minimize unnecessary computation. They borrow this ordered processing of SCCs from the original static algorithm proposed by Garg et al. \cite{rank-garg16}.}
+% Additionally, we provide the pseudocode for \textit{Dynamic Traversal With-barrier} PageRank (\TraWbar{}), which can be referred to in Algorithm \ref{alg:with-barrier-dynamic-traversal}.

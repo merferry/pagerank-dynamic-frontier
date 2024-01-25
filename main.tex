@@ -1,0 +1,218 @@
+\documentclass[sigconf,nonacm]{acmart}
+
+%% Enable subfigures
+\usepackage{subfigure}
+%% Enable numbers in scientific format.
+\usepackage{siunitx}
+%% Enable enumerate start from.
+\usepackage{enumitem}
+
+%% Enable theorems
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+%% Enable algorithms
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\let\ReturnInline\Return
+\renewcommand{\Return}{\State\ReturnInline}
+\algrenewcommand\algorithmicrequire{$\rhd$}
+\algrenewcommand\algorithmicensure{$\square$}
+
+%% Fonts used in the template cannot be substituted; margin 
+%% adjustments are not allowed.
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    \normalfont B\kern-0.5em{\scshape i\kern-0.25em b}\kern-0.8em\TeX}}}
+
+%% Rights management information.
+\setcopyright{acmcopyright}
+\copyrightyear{2018}
+\acmYear{2018}
+\acmDOI{XXXXXXX.XXXXXXX}
+
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[Conference acronym 'XX]{Make sure to enter the correct
+  conference title from your rights confirmation emai}{June 03--05,
+  2018}{Woodstock, NY}
+%% Title of the proceedings is different from ``Proceedings of ...''?
+% \acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+%  June 03--05, 2018, Woodstock, NY} 
+% \acmPrice{15.00}
+% \acmISBN{978-1-4503-XXXX-X/18/06}
+
+%% Submission ID.
+% \acmSubmissionID{123-A56-BU3}
+
+%% Use the "author year" style of citations and references?
+% \citestyle{acmauthoryear}
+
+%% Message
+\newcommand{\kk}[1]{{{\color{red} #1}}}
+\newcommand{\ds}[1]{{{\color{blue} #1}}}
+\newcommand{\su}[1]{{{\color{green} #1}}}
+
+%% Ignore block
+\newcommand{\ignore}[1]{}
+
+%% Macros
+\newcommand{\Lou}{\textit{Louvain}}
+\newcommand{\LPA}{\textit{LPA}}
+\newcommand{\Hyb}{\textit{Hybrid Louvain-LPA}}
+\newcommand{\DelOrg}{\textit{$\Delta$-screening}}
+\newcommand{\Del}{P-DDS}
+\newcommand{\StaLou}{\textit{Static Louvain}}
+\newcommand{\NaiLou}{$\text{P-ND}_\text{L}$}
+\newcommand{\DelLou}{$\text{P-DDS}_\text{L}$}
+\newcommand{\FroLou}{$\text{P-DF}_\text{L}$}
+\newcommand{\StaLPA}{\textit{Static LPA}}
+\newcommand{\NaiLPA}{$\text{P-ND}_\text{LPA}$}
+\newcommand{\DelLPA}{$\text{P-DDS}_\text{LPA}$}
+\newcommand{\FroLPA}{$\text{P-DF}_\text{LPA}$}
+\newcommand{\FroHyb}{$\text{P-DF}_\text{H}$}
+
+%% Short names (PR)
+\newcommand{\Wbar}{Algorithm $\text{XX}_{\text{WBPR}}$}
+\newcommand{\Barf}{Algorithm $\text{XX}_{\text{BFPR}}$}
+\newcommand{\Sta}{Algorithm $\text{Static}_{\text{XXPR}}$}
+\newcommand{\Nai}{Algorithm $\text{ND}_{\text{XXPR}}$}
+\newcommand{\Tra}{Algorithm $\text{DT}_{\text{XXPR}}$}
+\newcommand{\Fro}{Algorithm $\text{DF}_{\text{XXPR}}$}
+\newcommand{\StaWbar}{Algorithm $\text{Static}_{\text{WBPR}}$}
+\newcommand{\StaBarf}{Algorithm $\text{Static}_{\text{BFPR}}$}
+\newcommand{\NaiWbar}{Algorithm $\text{ND}_{\text{WBPR}}$}
+\newcommand{\NaiBarf}{Algorithm $\text{ND}_{\text{BFPR}}$}
+\newcommand{\TraWbar}{Algorithm $\text{DT}_{\text{WBPR}}$}
+\newcommand{\TraBarf}{Algorithm $\text{DT}_{\text{BFPR}}$}
+\newcommand{\FroWbar}{Algorithm $\text{DF}_{\text{WBPR}}$}
+\newcommand{\FroBarf}{Algorithm $\text{DF}_{\text{BFPR}}$}
+
+
+
+
+\begin{document}
+
+%% Full title of the paper.
+\title[DF-PageRank: A Fast Incrementally Expanding and Contracting Approach for Updating PageRank on Dynamic Graphs]{DF-PageRank: A Fast Incrementally Expanding and Contracting Approach for Updating PageRank on Dynamic Graphs}
+
+%% Short title to be used in page headers (optional).
+% \title[short title]{full title}
+% \subtitle{Something other than the title}
+
+%% Authors and their affiliations.
+\author{Subhajit Sahu}
+\email{subhajit.sahu@research.iiit.ac.in}
+\affiliation{%
+  \institution{IIIT Hyderabad}
+  \streetaddress{Professor CR Rao Rd, Gachibowli}
+  \city{Hyderabad}
+  \state{Telangana}
+  \country{India}
+  \postcode{500032}
+}
+
+%% Concise author list in page headers.
+%\renewcommand{\shortauthors}{Sahu, Kothapalli, and Banerjee, et al.}
+
+%% Show page numbers.
+\settopmatter{printfolios=true}
+
+%% Short summary of the work to be presented in the article.
+\begin{abstract}
+PageRank is a popular centrality metric that assigns importance to the vertices of a graph based on its neighbors and their score. Efficient parallel algorithms for updating PageRank on dynamic graphs is crucial for various applications, especially as dataset sizes have reached substantial scales. This technical report presents our Dynamic Frontier approach. Given a batch update consisting of edge insertions and deletions, it progressively identifies affected vertices that are likely to change their ranks with minimal overhead. On a server equipped with a 64-core AMD EPYC-7742 processor, our Dynamic Frontier PageRank outperforms Static, Naive-dynamic, and Dynamic Traversal PageRank by $7.8\times$, $2.9\times$, and $3.9\times$ respectively - on uniformly random batch updates of size $10^{-7}|E|$ to $10^{-3}|E|$. In addition, our approach improves performance at an average rate of $1.8\times$ for every doubling of threads.
+\end{abstract}
+
+
+
+
+%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10003752.10003809.10010170</concept_id>
+<concept_desc>Theory of computation~Parallel algorithms</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10003752.10003809.10003635</concept_id>
+<concept_desc>Theory of computation~Graph algorithms analysis</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+% \ccsdesc[500]{Theory of computation~Parallel algorithms}
+% \ccsdesc[500]{Theory of computation~Graph algorithms analysis}
+
+%% Pick words that accurately describe the work being presented.
+\keywords{Parallel PageRank algorithm, Dynamic Frontier approach}
+
+% \received{20 February 2007}
+% \received[revised]{12 March 2009}
+% \received[accepted]{5 June 2009}
+
+
+
+
+%% Process the author and title information.
+\maketitle
+
+\section{Introduction}
+\label{sec:introduction}
+\input{01-introduction}
+
+\section{Related work}
+\label{sec:related}
+\input{02-related-work}
+
+\section{Preliminaries}
+\label{sec:preliminaries}
+\input{03-preliminaries}
+
+\section{Approach}
+\label{sec:approach}
+\input{04-approach}
+
+\section{Evaluation}
+\label{sec:evaluation}
+\input{05-evaluation}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{06-conclusion}
+
+%% The acknowledgments section.
+\begin{acks}
+I would like to thank Prof. Kishore Kothapalli, Prof. Sathya Peri, and Prof. Hemalatha Eedi for their support.
+\end{acks}
+
+%% Bibliography style to be used, and the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{main}
+
+\end{document}
+\endinput
+%% End of file.
+
+
+
+
+%% NOTES:
+%% - Parallelization seems to be not efficient for small batch updates.
+%% - Discuss about conflicting updates
+%% - 
+
+
+%% TODO:
+%% - Scale up the size of the graphs
+%% - Move experiments to a better server
+%% - Include a weak- and strong- scalabiilty plot: run the expt from 2 to 128 threads
+%% - overall space planning
+%% - add a few lines on novelty of the paper.
+%% - table comparison of related work
+%% - Include a section on preliminaries that talks about the various algorithmic ideas (Louvain, Label Propagation)
+
+%% Workplan:
+%% - KK -- Read Introduction, Related Work,
+%% - Dip Sankar -- Approach -- summarize the main algorithmic ideas,
+%% - Subhajit -- Results -- Plots, scalability, Dataset, experiments, implementation details,

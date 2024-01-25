@@ -1,0 +1,59 @@
+\begin{algorithm}[!hbt]
+\caption{Our parallel Dynamic Frontier PageRank.}
+\label{alg:frontier}
+\begin{algorithmic}[1]
+\Require{$G^{t-1}, G^t$: Previous, current input graph}
+\Require{$\Delta^{t-}, \Delta^{t+}$: Edge deletions and insertions (input)}
+\Require{$R^{t-1}$: Previous rank vector}
+\Ensure{$R$: Current rank vector}
+\Ensure{$\Delta r$: Change in rank of a vertex}
+\Ensure{$\Delta R$: $L\infty$-norm between previous and current ranks}
+\Ensure{$\alpha$: Damping factor}
+\Ensure{$\tau$: Iteration tolerance}
+\Ensure{$\tau_f$: Frontier tolerance}
+
+\Statex
+
+\Function{dynamicFrontier}{$G^{t-1}, G^t, \Delta^{t-}, \Delta^{t+}, R^{t-1}$}
+  \State $R \gets R^{t-1}$
+  \State $\rhd$ Mark initial affected
+  \ForAll{$(u, v) \in \Delta^{t-} \cup \Delta^{t+} \textbf{in parallel}$} \label{alg:frontier--mark-begin}
+    \ForAll{$v' \in (G^{t-1} \cup G^t).out(u)$}
+    \State Mark $v'$ as affected
+    \EndFor
+  \EndFor \label{alg:frontier--mark-end}
+  \ForAll{$i \in [0 .. MAX\_ITERATIONS)$} \label{alg:frontier--compute-begin}
+    \State $\Delta R \gets 0$
+    \ForAll{affected $v \in V^t$ \textbf{in parallel}}
+      \State $r \gets (1 - \alpha)/|V^t|$
+      \ForAll{$u \in G^t.in(v)$}
+        \State $r \gets r + \alpha * R[u] / |G^t.out(u)|$
+      \EndFor
+      \State $\Delta r \gets |r - R[v]|$ \textbf{;} $\Delta R \gets max(\Delta R, \Delta r)$
+      \State $\rhd$ Is rank change $>$ frontier tolerance?
+      \If{$\Delta r > \tau_f$} \label{alg:frontier--remark-begin}
+        \ForAll{$v' \in G^t.out(v)$}
+          \State Mark $v'$ as affected
+        \EndFor
+      \EndIf \label{alg:frontier--remark-end}
+    \EndFor
+    \State $\rhd$ Ranks converged?
+    \If{$\Delta R \le \tau$} \textbf{break}
+    \EndIf
+  \EndFor \label{alg:frontier--compute-end}
+  \State \ReturnInline{$R$} \label{alg:frontier--return}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+%% Requires (parameters):
+% G(V, E): a directed unweighted graph
+% R: initial ranks (1/N for static)
+
+%% Parameter values:
+% MAX\_ITERATIONS = 500
+% DAMPING\_FACTOR = 0.85
+% TOLERANCE = 10^-10
