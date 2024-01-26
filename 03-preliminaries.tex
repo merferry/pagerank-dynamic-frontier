@@ -36,14 +36,14 @@ We assume changes to the graph to be batched, with updating of the graph and alg
 
 \subsection{Existing approaches for updating PageRank on Dynamic Graphs}
 
-\subsubsection{Naive-dynamic (ND) approach}
+\subsubsection{Naive-dynamic approach}
 \label{sec:about-naive}
 
 This\ignore{straightforward} approach involves updating vertex ranks in dynamic networks by initializing them with ranks from the previous graph snapshot and running the PageRank algorithm on all vertices. Rankings obtained using this approach are at least as accurate as those obtained from the static algorithm.\ignore{Zhang et al. \cite{rank-zhang17} have explored the \textit{Naive-dynamic} approach in the hybrid CPU-GPU setting.}
 % We also include the pseudocode for \textit{Naive-dynamic With-barrier} PageRank (\NaiWbar{}) for reference in Algorithm \ref{alg:with-barrier-naive-dynamic}.
 
 
-\subsubsection{Dynamic Traversal (DT) approach}
+\subsubsection{Dynamic Traversal approach}
 \label{sec:about-traversal}
 
 Initially proposed by Desikan et al. \cite{rank-desikan05}, this approach involves skipping the processing of vertices whose ranks are unlikely to be updated by the given batch update. For each edge deletion or insertion $(u, v)$ in the batch update, all vertices reachable from vertex $u$ in either graph $G^{t-1}$ or $G^t$ are marked as affected, using DFS or BFS.\ignore{Giri et al. \cite{rank-giri20} have explored the \textit{Dynamic Traversal} approach in the hybrid CPU-GPU setting. On the other hand, Banerjee et al. \cite{rank-sahu22} have explored this approach in the CPU and GPU settings separately where they compute the ranks of vertices in topological order of strongly connected components (SCCs) to minimize unnecessary computation. They borrow this ordered processing of SCCs from the original static algorithm proposed by Garg et al. \cite{rank-garg16}.}

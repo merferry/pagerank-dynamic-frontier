@@ -1,21 +1,19 @@
 \begin{algorithm}[!hbt]
-\caption{Our parallel Dynamic Frontier PageRank.}
+\caption{Our parallel Dynamic Frontier (DF) PageRank.}
 \label{alg:frontier}
 \begin{algorithmic}[1]
 \Require{$G^{t-1}, G^t$: Previous, current input graph}
 \Require{$\Delta^{t-}, \Delta^{t+}$: Edge deletions and insertions (input)}
-\Require{$R^{t-1}$: Previous rank vector}
-\Ensure{$R$: Current rank vector}
+\Require{$R^{t-1}, R$: Previous, current rank vector}
 \Ensure{$\Delta r$: Change in rank of a vertex}
 \Ensure{$\Delta R$: $L\infty$-norm between previous and current ranks}
+\Ensure{$\tau, \tau_f, \tau_p$: Iteration, frontier, prune tolerance}
 \Ensure{$\alpha$: Damping factor}
-\Ensure{$\tau$: Iteration tolerance}
-\Ensure{$\tau_f$: Frontier tolerance}
 
 \Statex
 
 \Function{dynamicFrontier}{$G^{t-1}, G^t, \Delta^{t-}, \Delta^{t+}, R^{t-1}$}
-  \State $R \gets R^{t-1}$
+  \State $R \gets R^{t-1}$ \label{alg:frontier--initialize}
   \State $\rhd$ Mark initial affected
   \ForAll{$(u, v) \in \Delta^{t-} \cup \Delta^{t+} \textbf{in parallel}$} \label{alg:frontier--mark-begin}
     \ForAll{$v' \in (G^{t-1} \cup G^t).out(u)$}
@@ -29,13 +27,19 @@
       \ForAll{$u \in G^t.in(v)$}
         \State $r \gets r + \alpha * R[u] / |G^t.out(u)|$
       \EndFor
-      \State $\Delta r \gets |r - R[v]|$ \textbf{;} $\Delta R \gets max(\Delta R, \Delta r)$
-      \State $\rhd$ Is rank change $>$ frontier tolerance?
-      \If{$\Delta r > \tau_f$} \label{alg:frontier--remark-begin}
+      \State $\Delta r \gets |r - R[v]|$ \textbf{;} $\Delta R \gets \max(\Delta R, \Delta r)$
+      \State $\rhd$ Prune $v$ if its relative rank change is small
+      \If{$\Delta r / \max(r, R[v]) \leq \tau_p$}
+        \State Mark $v$ as not affected
+      \EndIf
+      \State $\rhd$ Expand frontier if relative rank change is large
+      \If{$\Delta r / \max(r, R[v]) > \tau_f$} \label{alg:frontier--remark-begin}
         \ForAll{$v' \in G^t.out(v)$}
           \State Mark $v'$ as affected
         \EndFor
       \EndIf \label{alg:frontier--remark-end}
+      \State $\rhd$ Update rank of $v$
+      \State $R[v] \gets r$
     \EndFor
     \State $\rhd$ Ranks converged?
     \If{$\Delta R \le \tau$} \textbf{break}

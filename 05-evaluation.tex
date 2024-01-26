@@ -3,7 +3,7 @@
 
 \subsubsection{System used}
 
-Experiments are performed on a system featuring an AMD EPYC-7742 processor with $64$ cores, operating at a frequency of $2.25$ GHz. Each core is equipped with a $4$ MB L1 cache, a $32$ MB L2 cache, and shares a $256$ MB L3 cache. The server is set up with $512$ GB of DDR4 system memory and runs on Ubuntu $20.04$.
+Experiments are performed on a system featuring an AMD EPYC-7742 processor with $64$ cores, operating at a frequency of $2.25$ GHz. Each core is equipped with a $4$ MB L1 cache, a $32$ MB L2 cache, and shares a $256$ MB L3 cache. The server is set up with $512$ GB of DDR4 system memory and runs Ubuntu $20.04$.
 
 
 \subsubsection{Configuration}
@@ -11,9 +11,14 @@ Experiments are performed on a system featuring an AMD EPYC-7742 processor with 
 We utilize 32-bit integers for vertex IDs and 64-bit floating-point numbers for vertex ranks. Affected vertices are represented using an 8-bit integer vector. The rank computation employs OpenMP's \textit{dynamic schedule} with a chunk size of $2048$, facilitating dynamic workload balancing among threads. We use a damping factor of $\alpha = 0.85$ \cite{rank-langville06}, with an iteration tolerance of $\tau = 10^{-10}$ using the $L_\infty$-norm \cite{rank-dubey22, rank-plimpton11}. The maximum number of iterations (\texttt{MAX\_ITERATIONS}) is limited to $500$ \cite{nvgraph}. All experiments are conducted with $64$ threads to match the number of cores available on the system, unless specified otherwise. Compilation is carried out using GCC $9.4$ and OpenMP $5.0$.
 
 
+\ignore{\subsubsection{Asynchronous implementation}}
+
+\ignore{We employ an asynchronous implementation of DF-PageRank, using a single rank vector for potentially faster convergence and elimination of memory copies for unaffected vertices. This, based on our previous research \cite{sahu2024incrementally}, outperforms synchronous implementations, especially with smaller batch sizes. Additionally, we utilize asynchronous implementations of Naive-dynamic (ND) and Dynamic Traversal (DT) PageRank.}
+
+
 \subsubsection{Dataset}
 
-We use the largest five temporal networks from the Stanford Large Network Dataset Collection \cite{snapnets}, as detailed in Table \ref{tab:dataset}. The number of vertices in these graphs range from $X$ million to $X$ million, with temporal edge counts spanning from $X$ million to $X$ billion, and static edge counts spanning from $X$ million to $X$ billion. For the experiment in Section $X$, we use four classes of static graphs (as batch update are randomly generated, with uniform probability for selection of any vertex as the endpoint of an edge to be inserted or deleted), sourced from the \textit{SuiteSparse Matrix Collection} \cite{suite19}, as detailed in Table \ref{tab:dataset}. The number of vertices in these graphs range from $3.07$ million to $214$ million, with edge counts spanning from $37.4$ million to $1.98$ billion. To address the impact of dead ends (vertices lacking out-links), a global teleport rank computation is needed in each iteration. We mitigate this overhead by adding self-loops to all vertices in the graph \cite{rank-andersen07, rank-langville06}.
+We utilize the five largest temporal networks from the Stanford Large Network Dataset Collection \cite{snapnets}, outlined in Table \ref{tab:dataset}. These networks contain vertex counts ranging from $24.8$ thousand to $2.60$ million, temporal edge counts from $507$ thousand to $63.4$ million, and static edge counts from $240$ thousand to $36.2$ million. To address dead ends (vertices lacking out-links), a global teleport rank computation is needed in each iteration. We mitigate this overhead by adding self-loops to all vertices\ignore{ in the graph} \cite{kolda2009generalized, rank-andersen07, rank-langville06}.
 
 \input{src/tab-dataset}
 
@@ -21,7 +26,7 @@ We use the largest five temporal networks from the Stanford Large Network Datase
 \subsubsection{Batch Generation}
 \label{sec:batch-generation}
 
-For each base (static) graph from the dataset, we generate a random batch update, consisting of purely edge insertions, purely edge deletions, or an $80\% : 20\%$ mix of edge insertions and deletions to mimic realistic batch updates. The set of edges for insertion is prepared by selecting vertex pairs with equal probability. To construct the set of edge deletions, we delete each existing edge with a uniform probability. For simplicity, we ensure that no new vertices are added to or removed from the graph. The batch size is measured as a fraction of edges in the original graph, and is varied from $10^{-7}$ to $0.1$ (i.e., $10^{-7}|E|$ to $0.1|E|$), with multiple batches generated for each size (for averaging). Along with each batch update, self-loops are added to all vertices.
+For each experiment, we first load $90\%$ of each real world dynamic graph (or temporal network), as given in Table \ref{tab:dataset}, and then load $B$ edges one after another (with $100$ such consecutive batch updates). Here, $B$ is the desired batch size for each experiment, which is specified as a fraction of the number of temporal edges $|E_T|$ in the graph. Along with each batch update, self-loops are added to all vertices.
 
 
 \subsubsection{Measurement}
@@ -30,14 +35,9 @@ For each base (static) graph from the dataset, we generate a random batch update
 We measure the time taken by each approach on the updated graph entirely, including any preprocessing costs and convergence detection time, while excluding time dedicated to memory allocation and deallocation. The mean time for a specific method at a given batch size is calculated as the geometric mean across various input graphs. Consequently, the average speedup is determined as the ratio of these mean times. Additionally, we gauge the error/accuracy of a given approach by assessing the $L1$-norm \cite{ohsaka2015efficient} of the ranks in comparison to ranks obtained from a reference Static PageRank run on the updated graph with an extremely low iteration tolerance of $\tau = 10^{-100}$ (limited to $500$ iterations).
 
 \input{src/fig-temporal-all}
-\input{src/fig-temporal-batch5}
-\input{src/fig-temporal-batch4}
-\input{src/fig-temporal-batch3}
 \input{src/fig-temporal-large}
-% \input{src/fig-8020-runtime}
-% \input{src/fig-8020-speedup}
-% \input{src/fig-8020-error}
-% \input{src/fig-measure-affected}
+\input{src/fig-temporal-batch}
+\input{src/fig-measure-affected}
 
 
 

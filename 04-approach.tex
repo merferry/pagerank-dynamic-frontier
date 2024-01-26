@@ -1,7 +1,9 @@
-\subsection{Our improved Dynamic Frontier (DF) approach for Real-world Dynamic Graphs}
+\input{src/fig-about-frontier}
+
+\subsection{Our improved Dynamic Frontier approach}
 \label{sec:frontier}
 
-If a batch update $\Delta^{t-} \cup \Delta^{t+}$ is small compared to the total number of edges $|E|$, then it is expected that the ranks of only a few vertices change. Our proposed Dynamic Frontier approach incorporates this aspect, and identifies affected vertices via an incremental process. This allows it to avoid unnecessary computation, since ranks of vertices far for the updated region of the graph cannot have a change in their ranks until the ranks of its immediate in-neighbors change. In addition, we avoid marking the neighbors of a vertex as affected, if the change in rank of the vertex is small enough and is likely to have minimal effect on the ranks of its neighbors.
+When a batch update $\Delta^{t-} \cup \Delta^{t+}$ is relatively small compared to the total number of edges $|E|$, it is anticipated that only a few vertices will experience rank changes. Our improved Dynamic Frontier approach addresses this scenario by employing an incremental process to identify affected vertices.\ignore{This helps minimize unnecessary computations, as vertices distant from the updated region of the graph are unlikely to experience rank changes until the ranks of their immediate in-neighbors change. In addition, we refrain from marking a vertex's neighbors as affected if the relative change in rank of the vertex is insignificant and is likely to have a minimal impact its neighbors ranks. We also avoid unnecessary computation of ranks of vertices that have likely settled, by no longer marking them as affected if the relative change in rank of the vertex is trivial.}
 
 
 \subsubsection{Explanation of the approach}
@@ -9,42 +11,41 @@ If a batch update $\Delta^{t-} \cup \Delta^{t+}$ is small compared to the total 
 
 Consider a batch update consisting of edge deletions $(u, v) \in \Delta^{t-}$ and insertions $(u, v) \in \Delta^{t+}$. We first initialize the rank of each vertex to that obtained in the previous snapshot of the graph.
 
-\input{src/fig-about-frontier}
-
-\paragraph{Initial marking of affected vertex on edge deletion/insertion:}
+\paragraph{Initial marking of affected vertices:}
 
 For each edge deletion/insertion $(u, v)$, we initially mark the outgoing neighbors of the vertex $u$ in the previous $G^{t-1}$ and current graph snapshot $G^t$ as affected.
 
-\paragraph{Incremental marking of affected vertices upon change in rank of a given vertex:}
+\paragraph{Incremental expansion and contraction of the set of affected vertices upon change in rank of a given vertex:}
 
-Next, while performing PageRank computation, if the rank of any affected vertex $v$ changes in an iteration by an amount greater than the \textit{frontier tolerance} $\tau_f$, we mark its outgoing neighbors as affected. This process of marking vertices continues in every iteration.
+During PageRank computation, if the rank of any affected vertex $v$ changes in an iteration by a fraction greater than the \textit{frontier tolerance} $\tau_f$, we mark its outgoing neighbors as affected. This adjustment is made because a change in a vertex's rank is expected to influence the ranks of its outgoing neighbors. Additionally, if the relative change in rank of a vertex remains below the \textit{prune tolerance} $\tau_p$, the vertex is no longer marked as affected, as its rank may have converged. However, if the rank of such a vertex has not yet settled, it may be re-marked as affected by one of its in-neighbors. This process of marking and unmarking of vertices as affected continues in every iteration.
 
 
 \subsubsection{A simple example}
 
-Figure \ref{fig:about-frontier} shows an example of the Dynamic Frontier approach. The initial graph, shown in Figure \ref{fig:about-frontier-01}, comprises $16$ vertices and $25$ edges. Subsequently, Figure \ref{fig:about-frontier-02} shows a batch update applied to the original graph involving the deletion of an edge from vertex $2$ to $1$ and the insertion of an edge from vertex $4$ to $12$. Following the batch update, we perform the initial step of the Dynamic Frontier approach, marking outgoing neighbors of $2$ and $4$ as affected, i.e., $1$, $3$, $4$, $8$, and $12$ are marked as affected (indicated with a yellow fill). Note that vertex $2$ is not affected as it is a source of the change while vertex $4$ being a neighbour of $2$ is marked as affected. Now, we are ready to execute the first iteration of PageRank algorithm.
+Figure \ref{fig:about-frontier} illustrates an example of our improved Dynamic Frontier approach. Initially, as depicted in Figure \ref{fig:about-frontier-01}, the graph comprises $12$ vertices and $16$ edges. Subsequently, Figure \ref{fig:about-frontier-02} shows a batch update applied to the original graph, involving an edge insertion from vertex $6$ to $8$ and an edge deletion from vertex $2$ to $1$. Following the batch update, we proceed with the initial step of the Dynamic Frontier approach, marking outgoing neighbors of vertices $2$ and $6$ as affected, specifically vertices $1$, $3$, $8$, and $12$. These affected vertices are highlighted with a yellow fill. It is noteworthy that vertices $2$ and $6$ are not marked as affected. This is because changes in the out-degree of a vertex does not influence its PageRank score. Subsequently, we initiate the first iteration of the PageRank algorithm.
 
-During the first iteration (see Figure \ref{fig:about-frontier-03}), the ranks of affected vertices are updated. It is observed that the rank changes of vertices $1$ and $12$ surpass the frontier tolerance $\tau_f$ (highlighted with a red border). In response to this, we incrementally mark the outgoing neighbors of $1$ and $12$ as affected, i.e., vertices $3$, $5$, $11$, and $14$. 
+During the first iteration (refer to Figure \ref{fig:about-frontier-03}), the ranks of affected vertices are updated. It is observed that the relative change in rank of vertices $1$, $3$, $8$, and $12$ exceeds the frontier tolerance $\tau_f$. Such vertices are indicated with a red border in the figure. In response to this, we incrementally mark the outgoing neighbors of vertices $1$, $3$, $8$, and $12$ as affected, specifically vertices $4$, $5$, $7$, $9$, $11$, and $12$. Moreover, it is observed that the relative change in rank of vertices $1$, $3$, and $8$ remains below the prune tolerance $\tau_p$. As a result, these vertices are no longer marked as affected, as it is likely the ranks of such vertices have converged. This action effectively contracts the frontier of affected vertices. However, if the rank of such a vertex has not yet converged, it may be re-marked as affected by one of its in-neighbors.
 
-During the second iteration (see Figure \ref{fig:about-frontier-04}), the ranks of affected vertices are again updated. Here, its is observed that the change in rank of vertices $3$, $5$, $11$, and $14$ is greater than frontier tolerance $\tau_f$. Thus, we mark the outgoing neighbors of $3$, $5$, $11$, and $14$ as affected, namely vertices $4$, $6$, and $15$. In the subsequent iteration, the ranks of affected vertices are again updated. If the change in rank of each vertex is within iteration tolerance $\tau$, the ranks of vertices have converged, and the algorithm terminates.
-
-
+In the second iteration, shown in Figure \ref{fig:about-frontier-04}, updates are made to the ranks of affected vertices once again. Here, it is observed that the relative change in rank of vertices $5$, $9$, $11$, and $12$ exceeds the frontier tolerance $\tau_f$. Consequently, we mark the outgoing neighbors of vertices $5$, $9$, $11$, and $12$ as affected, specifically vertices $6$, $10$, and $11$. Furthermore, vertices $4$, $5$, $7$, $9$, and $12$ are no longer marked as affected, as their relative rank change falls below the prune tolerance $\tau_p$. In the next iteration, the ranks of affected vertices are updated once more. If the change in rank of each vertex remains within the iteration tolerance $\tau$, the ranks of vertices have converged, and the algorithm terminates.
 
 
-\subsection{Synchronous vs Asynchronous implementation}
 
-In a synchronous implementation, separate input and output rank vectors are used, ensuring deterministic results for parallel algorithms through vector swapping at the end of each iteration. In contrast, an asynchronous implementation utilizes a single rank vector, potentially achieving faster convergence and eliminating memory copies for unaffected vertices in dynamic approaches\ignore{, but introduces non-deterministic results in parallel algorithms}.
 
-To assess synchronous and asynchronous implementations for Dynamic Frontier PageRank, both are tested on batch updates (purely edge insertions) ranging from $10^{-7}|E|$ to $0.1|E|$ for Static, Naive-dynamic, Dynamic Traversal, and Dynamic Frontier PageRank. Figure \ref{fig:approach-async} depicts the average relative runtime of asynchronous implementations compared to their synchronous counterparts. Based on the results, we use the asynchronous implementations of Naive-dynamic, Dynamic Traversal, and Dynamic Frontier PageRank --- as they are faster, especially for smaller batch sizes.\ignore{This is due to a somewhat faster convergence and the absence of copy overhead (for Dynamic Traversal and Dynamic Frontier approaches).}
+\ignore{\subsection{Synchronous vs Asynchronous implementation}}
+
+\ignore{In a synchronous implementation, separate input and output rank vectors are used, ensuring deterministic results for parallel algorithms through vector swapping at the end of each iteration. In contrast, an asynchronous implementation utilizes a single rank vector, potentially achieving faster convergence and eliminating memory copies for unaffected vertices in dynamic approaches\ignore{, but introduces non-deterministic results in parallel algorithms}.}
+
+\ignore{To assess synchronous and asynchronous implementations for Dynamic Frontier PageRank, both are tested on batch updates (purely edge insertions) ranging from $10^{-7}|E|$ to $0.1|E|$ for Static, Naive-dynamic, Dynamic Traversal, and Dynamic Frontier PageRank. Figure \ref{fig:approach-async} depicts the average relative runtime of asynchronous implementations compared to their synchronous counterparts. Based on the results, we use the asynchronous implementations of Naive-dynamic, Dynamic Traversal, and Dynamic Frontier PageRank --- as they are faster, especially for smaller batch sizes.\ignore{This is due to a somewhat faster convergence and the absence of copy overhead (for Dynamic Traversal and Dynamic Frontier approaches).}}
 
 
 
 
 \subsection{Determination of Frontier tolerance ($\tau_f$)}
+\label{sec:frontier-tolerance}
 
-We now measure a suitable value for frontier tolerance $\tau_f$ that allows us to minimize the number of vertices we process (after marking them as affected), while ensuring that we obtain ranks with the desired tolerance, i.e. we obtain ranks with no higher error than Static PageRank for the same tolerance setting. For this, we adjust frontier tolerance $\tau_f$ from $\tau$ to $\tau / 10^5$ and obtain ranks of vertices with the Dynamic Frontier approach on batch updates (consisting purely of edge insertions) of size $10^{-7}|E|$ to $0.1|E|$.
+We first need to determine a suitable approach for frontier expansion, and an associate frontier tolerance $\tau_f$ value that allows us to minimize processed vertices, while limiting error to that of ranks obtained with Static PageRank using the same iteration tolerance $\tau$. For this, we experiment with three approaches. These include marking neighbors of a vertex as affected, based on change in rank of the vertex $\Delta r$, change in its contribution factor $\Delta r/d$, or relative change in its rank $\Delta r/r$. Here, $\Delta r$ is the rank change, $d$ is the out-degree, and $r$ is the vertex's \texttt{max} rank (the maximum of its previous and current rank values).
 
-Figure \ref{fig:adjust-frontier} illustrates the average relative runtime and rank error (in comparison to ranks obtained with reference Static PageRank) using the Dynamic Frontier approach. The figure suggests that as $\tau_f$ increases, runtime decreases, but it is accompanied by an increase in error. A frontier tolerance $\tau_f$ set at $\tau/10^4$ or $\tau/10^5$ yields ranks with lower error than Static PageRank, making them acceptable for uniformly random batch updates. To err on the side of caution, we opt for a frontier tolerance of $\tau_f = \tau/10^5$.
+For $\Delta r$ and $\Delta r/d$, we adjust $\tau_f$ from $\tau$ to $\tau/10^5$; and for $\Delta r/r$, we adjust it from $0.1$ to $10^{-6}$. This is done on real world dynamic graphs, shown in Table \ref{tab:dataset}, with batch updates of size $10^{-5}|E_T|$. Outgoing neighbors are marked affected if the respective measure exceeds $\tau_f$. Figure \ref{fig:adjust-frontier} shows the mean speedup (with respect to Static PageRank) and rank error (compared to ranks obtained with reference Static PageRank) with each approach for frontier expansion. Results indicate that the $\Delta r/r$ approach with a $\tau_f$ of $10^{-6}$ performs best, while yielding lower error than Static PageRank.
 
 \input{src/fig-adjust-frontier}
 \input{src/fig-adjust-prune}
@@ -53,11 +54,23 @@ Figure \ref{fig:adjust-frontier} illustrates the average relative runtime and ra
 
 
 
-\subsection{Our Dynamic Frontier PageRank implementation}
+\subsection{Determination of Prune tolerance ($\tau_p$)}
+\label{sec:prune-tolerance}
 
-Algorithm \ref{alg:frontier} shows our implementation of Dynamic Frontier PageRank, which is designed to compute the PageRank of vertices in a graph while efficiently handling dynamic changes in the graph structure over time. The algorithm takes as input the previous and current versions of the graph, edge deletions and insertions in the batch update, and the previous rank vector.
+We now measure a suitable value for prune tolerance $\tau_p$ for the best approach of frontier expansion $\Delta r/r$ with a frontier tolerance $\tau_f$ of $10^{-6}$, as identified in Section \ref{sec:frontier-tolerance}. For this, we adjust $\tau_p$ from $\tau_f$ to $\tau_f/10^5$. In addition, we also experiment with $\tau_f$ of $10^{-7}$ and $10^{-8}$ to be on the safe side. This is done on real world graphs, with batch updates of size $10^{-5}|E_T|$ (as earlier). A vertex is marked as unaffected, if its relative rank change $\Delta r/r$ lies within $\tau_p$.
 
-It begins by marking the initially affected vertices based on the edge deletions $\Delta^{t-}$ and insertions $\Delta^{t+}$ in parallel (lines \ref{alg:frontier--mark-begin}-\ref{alg:frontier--mark-end}). It then enters an iterative computation phase (lines \ref{alg:frontier--compute-begin}-\ref{alg:frontier--compute-end}), where it updates the rank of each affected vertex. The PageRank computation is performed in parallel for each affected vertex $v$, considering the incoming edges $G^t.in(v)$. The algorithm checks whether the change in rank $\Delta r$ exceeds the frontier tolerance $\tau_f$, and marks its out-neighbor vertices as affected if so. The iteration continues until either the net change in ranks $\Delta R$ (which is equal to the $L\infty$-norm between the previous and the current ranks) falls below the iteration tolerance $\tau$, or a maximum number of iterations is reached $MAX\_ITERATIONS$. In line \ref{alg:frontier--return}, the final rank vector $R$ is returned.
+Figure \ref{fig:adjust-prune} illustrates the mean speedup (compared to Static PageRank) and error in ranks obtained (with respect to ranks from reference Static PageRank, see Section \ref{sec:measurement}) with each $\tau_f$ for frontier expansion. The figure indicates that the $\Delta r/r$ approach with a $\tau_f$ of $10^{-6}$ and a $\tau_p$ of $\tau_f = 10^{-6}$ performs the best, while obtaining ranks with lower error than Static PageRank.
+
+
+
+
+\subsection{Our DF-PageRank implementation}
+
+Algorithm \ref{alg:frontier} shows the implementation of our improved Dynamic Frontier (DF) PageRank approach. It takes as input the previous $G^{t-1}$ and current $G^t$ snapshot of the graph, edge deletions $\Delta^{t-}$ and insertions $\Delta^{t+}$ in the batch update, the previous rank vector $R^{t-1}$, and returns as output, the updated ranks $R$.
+
+The algorithm begins by initializing the current rank vector $R$ with the previous rank vector $R^{t-1}$ (line \ref{alg:frontier--initialize}), and marking the initially affected vertices based on edge deletions $\Delta^{t-}$ and insertions $\Delta^{t+}$ in parallel (lines \ref{alg:frontier--mark-begin}-\ref{alg:frontier--mark-end}). It then iteratively computes the rank $R[v]$ for each affected vertex $v$ (lines \ref{alg:frontier--compute-begin}-\ref{alg:frontier--compute-end}). This computation is performed in parallel, considering the incoming edges $G^t.in(v)$. The algorithm checks if the relative change in rank $\Delta r / \max(r, R[v])$ exceeds the frontier tolerance $\tau_f$, marking out-neighbor vertices as affected if so. Additionally, if the relative change in rank lies within the prune tolerance $\tau_p$, the vertex $v$ is marked as not affected. The iteration continues until either the maximum change in ranks $\Delta R$ falls below the iteration tolerance $\tau$, or the maximum number of iterations $MAX\_ITERATIONS$ is reached. Finally, the algorithm returns the final rank vector $R$ (line \ref{alg:frontier--return}).
+
+In a push-based approach for PageRank computation, each thread calculates and sums the outgoing PageRank contribution of its vertex to its neighbors, necessitating atomic updates. In contrast, with a pull-based approach, each vertex's rank is updated through a single write by a thread \cite{verstraaten2015quantifying}. We find this to be more efficient and employ it for all implementations. Furthermore, we employ an asynchronous implementation of DF-PageRank, using a single rank vector, for potentially faster convergence and elimination of memory copies for unaffected vertices. This, based on our previous research \cite{sahu2024incrementally}, outperforms synchronous implementations, especially with smaller batch sizes. Additionally, we utilize asynchronous implementations of Naive-dynamic (ND) and Dynamic Traversal (DT) PageRank.
 
 
 

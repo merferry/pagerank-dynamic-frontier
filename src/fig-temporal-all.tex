@@ -1,13 +1,13 @@
 \begin{figure*}[!hbt]
   \centering
-  \subfigure{
+  \subfigure[]{
     \label{fig:temporal-all--runtime}
     \includegraphics[width=0.48\linewidth]{out/temporal-all-runtime.pdf}
   }
   \subfigure{
     \label{fig:temporal-all--error}
     \includegraphics[width=0.48\linewidth]{out/temporal-all-error.pdf}
-  } \\[-2ex]
-  \caption{Average Relative runtime with asynchronous implementations of \textit{Static}, \textit{Naive-dynamic}, \textit{Dynamic Traversal}, and \textit{Dynamic Frontier} approach compared to their respective synchronous implementations, on batch updates of size $10^{-7}|E|$ to $0.1|E|$ (right), and overall (left). The results indicate that asynchronous implementations are faster than synchronous ones, especially for smaller batch sizes. This is due to a somewhat faster convergence and the absence of copy overhead (for \textit{Dynamic Traversal} and \textit{Dynamic Frontier} approaches).}
+  } \\[-4ex]
+  \caption{Overall Runtime and Error in ranks obtained with \textit{Static}, \textit{Naive-dynamic (ND)}, \textit{Dynamic Traversal (DT)}, and our improved \textit{Dynamic Frontier (DF)} PageRank on real world dynamic graphs, with batch updates of size $10^{-5}|E|$ to $10^{-3}|E|$. In (a), the speedup of each approach with respect to Static PageRank is labeled.}
   \label{fig:temporal-all}
 \end{figure*}
