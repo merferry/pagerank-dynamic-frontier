@@ -1,4 +1,4 @@
-\subsection{Our Dynamic Frontier approach}
+\subsection{Our improved Dynamic Frontier (DF) approach for Real-world Dynamic Graphs}
 \label{sec:frontier}
 
 If a batch update $\Delta^{t-} \cup \Delta^{t+}$ is small compared to the total number of edges $|E|$, then it is expected that the ranks of only a few vertices change. Our proposed Dynamic Frontier approach incorporates this aspect, and identifies affected vertices via an incremental process. This allows it to avoid unnecessary computation, since ranks of vertices far for the updated region of the graph cannot have a change in their ranks until the ranks of its immediate in-neighbors change. In addition, we avoid marking the neighbors of a vertex as affected, if the change in rank of the vertex is small enough and is likely to have minimal effect on the ranks of its neighbors.

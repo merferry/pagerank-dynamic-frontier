@@ -7,7 +7,7 @@ However, the dynamic nature of most real-world graphs, characterized by frequent
 
 \subsection{Our Contributions}
 
-This report introduces our Dynamic Frontier approach\footnote{\url{https://github.com/puzzlef/pagerank-openmp-dynamic}}, which, when given a batch update involving edge insertions and deletions, incrementally identifies affected vertices likely to undergo rank changes with minimal overhead. On a server equipped with a 64-core AMD EPYC-7742 processor, our Dynamic Frontier PageRank surpasses Static, Naive-dynamic, and Dynamic Traversal PageRank by $7.8\times$, $2.9\times$, and $3.9\times$ respectively, for uniformly random batch updates of size $10^{-7}|E|$ to $10^{-3}|E|$, where $|E|$ is the number of edges in the original graph. Additionally, our approach exhibits a performance improvement of $1.8\times$ for each doubling of threads.
+This report introduces our Dynamic Frontier approach\footnote{\url{https://github.com/puzzlef/pagerank-openmp-dynamic}}, which, when given a batch update involving edge insertions and deletions, incrementally identifies affected vertices likely to undergo rank changes with minimal overhead. On a server equipped with a 64-core AMD EPYC-7742 processor, our Dynamic Frontier PageRank surpasses Static, Naive-dynamic, and Dynamic Traversal PageRank by $7.8\times$, $2.9\times$, and $3.9\times$ respectively, for uniformly random batch updates of size $10^{-7}|E|$ to $10^{-3}|E|$, where $|E|$ is the number of edges in the original graph. Additionally, our approach exhibits a performance improvement of $1.8\times$ for each doubling of threads. Additionally, our approach exhibits a performance improvement of $1.8\times$ for each doubling of threads.
 
 
 
