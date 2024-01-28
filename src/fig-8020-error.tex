@@ -1,0 +1,13 @@
+\begin{figure*}[hbtp]
+  \centering
+  \subfigure[Overall result]{
+    \label{fig:8020-error--mean}
+    \includegraphics[width=0.38\linewidth]{out/8020-error-mean.pdf}
+  }
+  \subfigure[Results on each graph]{
+    \label{fig:8020-error--all}
+    \includegraphics[width=0.58\linewidth]{out/8020-error-all.pdf}
+  } \\[-1ex]
+  \caption{Error comparison of \textit{Static}, \textit{Naive-dynamic (ND)}, \textit{Dynamic Traversal (DT)}, our improved \textit{Dynamic Frontier (DF)}, and \textit{Dynamic Frontier with Pruning (DF-P)} PageRank on large (static) graphs with generated random batch updates, relative to a Reference Static PageRank (see Section \ref{sec:measurement}), using $L1$-norm. The size of batch updates range from $10^{-7} |E|$ to $0.1 |E|$ in multiples of $10$ (logarithmic scale), consisting of $80\%$ edge insertions and $20\%$ edge deletions to simulate realistic dynamic graph updates. The right subfigure depicts the error for each approach in relation to each graph, while the left subfigure showcases overall errors using geometric mean for consistent scaling across graphs.}
+  \label{fig:8020-error}
+\end{figure*}

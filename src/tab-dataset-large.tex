@@ -1,0 +1,31 @@
+\begin{table}[hbtp]
+  \centering
+  \caption{List of $12$ graphs sourced from the SuiteSparse Matrix Collection \cite{suite19}, where directed graphs are indicated with $*$. Here, $|V|$ denotes the number of vertices, $|E|$ represents the number of edges (inclusive of self-loops), and $D_{avg}$ represents the average degree.}
+  \label{tab:dataset-large}
+  \begin{tabular}{|c||c|c|c|c|}
+    \toprule
+    \textbf{Graph} &
+    \textbf{\textbf{$|V|$}} &
+    \textbf{\textbf{$|E|$}} &
+    \textbf{\textbf{$D_{avg}$}} \\
+    \midrule
+    \multicolumn{4}{|c|}{\textbf{Web Graphs (LAW)}} \\ \hline
+    indochina-2004$^*$ & 7.41M & 199M & 26.8 \\ \hline  % & \num{4.7e-4}
+    % uk-2002$^*$ & 18.5M & 311M & 16.8 \\ \hline  % & \num{9.6e-5}
+    arabic-2005$^*$ & 22.7M & 654M & 28.8 \\ \hline  % & \num{5.5e-4}
+    uk-2005$^*$ & 39.5M & 961M & 24.3 \\ \hline  % & \num{9.6e-5}
+    webbase-2001$^*$ & 118M & 1.11B & 9.4 \\ \hline  % & \num{7.3e-7}
+    it-2004$^*$ & 41.3M & 1.18B & 28.5 \\ \hline  % & \num{3.8e-4}
+    sk-2005$^*$ & 50.6M & 1.98B & 39.1 \\ \hline  % & \num{5.8e-4}
+    \multicolumn{4}{|c|}{\textbf{Social Networks (SNAP)}} \\ \hline
+    com-LiveJournal & 4.00M & 73.4M & 18.3 \\ \hline  % & \num{7.9e-4}
+    com-Orkut & 3.07M & 237M & 77.3 \\ \hline  % & \num{6.7e-2}
+    \multicolumn{4}{|c|}{\textbf{Road Networks (DIMACS10)}} \\ \hline
+    asia\_osm & 12.0M & 37.4M & 3.1 \\ \hline  % & \num{8.4e-4}
+    europe\_osm & 50.9M & 159M & 3.1 \\ \hline  % & \num{6.6e-4}
+    \multicolumn{4}{|c|}{\textbf{Protein k-mer Graphs (GenBank)}} \\ \hline
+    kmer\_A2a & 171M & 531M & 3.1 \\ \hline  % & \num{9.4e-5}
+    kmer\_V1r & 214M & 679M & 3.2 \\ \hline  % & \num{3.2e-4}
+  \bottomrule
+  \end{tabular}
+\end{table}

@@ -1,0 +1,59 @@
+\input{src/fig-temporal-sx-mathoverflow}
+\input{src/fig-temporal-sx-askubuntu}
+\input{src/fig-temporal-sx-superuser}
+\input{src/fig-temporal-wiki-talk-temporal}
+\input{src/fig-temporal-sx-stackoverflow}
+\input{src/fig-8020-runtime}
+\input{src/fig-8020-error}
+
+\clearpage
+
+\section{Appendix}
+
+\subsection{Derivation of Closed loop formula for Rank calculation towards Dynamic Frontier with Pruning (DF-P) PageRank}
+\label{sec:pr-prune-derivation}
+
+We proceed to derive the closed-loop formula for rank calculation with DF-P PageRank. As outlined in Sections \ref{sec:dataset} and \ref{sec:batch-generation}, self-loops are added to each vertex to circumvent the need for a global teleport rank computation in every iteration, thus reducing overhead. In DF-P PageRank, our aim is to skip the computation of ranks for vertices likely to have already converged. However, the existence of self-loops causes a delay in vertex rank convergence due to the immediate recursive nature they introduce. For instance, if the ranks of all in-neighbors of a vertex have already converged, the presence of self-loops inhibits the convergence of the vertex's rank in a single iteration. Nevertheless, we can mitigate this convergence issue by employing a closed-loop formula for the rank calculation of each vertex.
+
+To achieve this, let us denote $r_0$ as the initial rank of a vertex $v$, $\alpha$ as the damping factor, $c = \sum_{u \in G.in(v)} \frac{R[u]}{|G.out(u)|}$ as the total rank contribution from its in-neighbors (excluding itself), $d = |G.out(v)|$ as its out-degree, and $C_0$ as $1 - \alpha/|V|$. Given the assumption that the rank contribution of its in-neighbors remains constant, the rank of $v$ after one iteration can be expressed as:
+
+\begin{flalign*}
+  r_1 & = \alpha (c + \frac{r_0}{d}) + C_0 && \\
+      & = \alpha c + \alpha \frac{r_0}{d} + C_0 && \\
+\end{flalign*}
+
+\noindent
+After the second iteration, the rank of the vertex would be:
+
+\begin{flalign*}
+  r_2 & = \alpha (c + \frac{r_1}{d}) + C_0 && \\
+      & = \alpha (c + \frac{1}{d} (\alpha c + \alpha \frac{r_0}{d} + C_0)) + C_0 && \\
+      & = \alpha c + \alpha^2 \frac{c}{d} + \alpha^2 \frac{r_0}{d^2} + \alpha \frac{C_0}{d} + C_0 &&
+\end{flalign*}
+
+\noindent
+Following the third iteration, the vertex's rank would be:
+
+\begin{flalign*}
+  r_3 & = \alpha (c + \frac{r_2}{d}) + C_0 && \\
+      & = \alpha (c + \frac{1}{d} (\alpha c + \alpha^2 \frac{c}{d} + \alpha^2 \frac{r_0}{d^2} + \alpha \frac{C_0}{d} + C_0) + C_0 && \\
+      & = \alpha c + \alpha^2 \frac{c}{d} + \alpha^3 \frac{c}{d^2} + \alpha^3 \frac{r_0}{d^3} + \alpha^2 \frac{C_0}{d^2} + \alpha \frac{C_0}{d} + C_0 && \\
+\end{flalign*}
+
+\noindent
+Expanding this to an infinite number of iterations, the vertex's final rank would be:
+
+\begin{flalign*}
+  r_\infty & = \frac{\alpha c}{1 - \alpha / d} + \frac{C_0}{1 - \alpha / d} && \\
+           & = \frac{1}{1 - \alpha / d} (\alpha c + C_0)
+\end{flalign*}
+
+\noindent
+Hence, the closed-loop formula for calculating the rank of a vertex $v$ in DF-P PageRank is:
+
+\begin{flalign}
+  R[v] & = \frac{1}{1 - \alpha / |G.out(v)|} \left(\alpha K + \frac{1 - \alpha}{|V|}\right) && \\
+    \text{where, } K & = \left(\sum_{u \in G.in(v)} \frac{R[u]}{|G.out(u)|}\right) - \frac{R[v]}{|G.out(v)|}
+\end{flalign}
+
+\input{src/tab-dataset-large}

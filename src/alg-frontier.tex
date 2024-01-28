@@ -1,5 +1,5 @@
 \begin{algorithm}[!hbt]
-\caption{Our parallel Dynamic Frontier (DF) PageRank.}
+\caption{Our parallel Dynamic Frontier (DF*) PageRank.}
 \label{alg:frontier}
 \begin{algorithmic}[1]
 \Require{$G^{t-1}, G^t$: Previous, current input graph}
@@ -21,15 +21,20 @@
     \EndFor
   \EndFor \label{alg:frontier--mark-end}
   \ForAll{$i \in [0 .. MAX\_ITERATIONS)$} \label{alg:frontier--compute-begin}
-    \State $\Delta R \gets 0$
+    \State $\Delta R \gets 0$ \textbf{;} $C_0 \gets (1 - \alpha)/|V^t|$
     \ForAll{affected $v \in V^t$ \textbf{in parallel}}
-      \State $r \gets (1 - \alpha)/|V^t|$
+      \State $c \gets 0$ \textbf{;} $d \gets |G^t.out(v)|$
       \ForAll{$u \in G^t.in(v)$}
-        \State $r \gets r + \alpha * R[u] / |G^t.out(u)|$
+        \State $c \gets c + R[u] / |G^t.out(u)|$
       \EndFor
+      \If{\textbf{is \textit{DF-P}}} \label{alg:frontier--formula-begin}
+        \State $r \gets 1/(1 - \alpha/d) * (C_0 + \alpha * (c - R[v]/d))$
+      \Else
+        \State $r \gets C_0 + \alpha * c$
+      \EndIf \label{alg:frontier--formula-end}
       \State $\Delta r \gets |r - R[v]|$ \textbf{;} $\Delta R \gets \max(\Delta R, \Delta r)$
       \State $\rhd$ Prune $v$ if its relative rank change is small
-      \If{$\Delta r / \max(r, R[v]) \leq \tau_p$}
+      \If{\textbf{is \textit{DF-P} and} $\Delta r / \max(r, R[v]) \leq \tau_p$}
         \State Mark $v$ as not affected
       \EndIf
       \State $\rhd$ Expand frontier if relative rank change is large

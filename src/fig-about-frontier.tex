@@ -1,23 +1,55 @@
 \begin{figure*}[hbtp]
   \centering
   \subfigure[Initial graph]{
-    \label{fig:about-frontier-01}
-    \includegraphics[width=0.23\linewidth]{out/about-frontier-01.pdf}
+    \label{fig:about-frontier-df1}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-11.pdf}
   }
-  \subfigure[Marking affected (initial)]{
-    \label{fig:about-frontier-02}
-    \includegraphics[width=0.23\linewidth]{out/about-frontier-02.pdf}
+  \subfigure[Marking initial affected vertices (DF)]{
+    \label{fig:about-frontier-df2}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-32.pdf}
   }
-  \subfigure[After first iteration]{
-    \label{fig:about-frontier-03}
-    \includegraphics[width=0.23\linewidth]{out/about-frontier-03.pdf}
+  \subfigure[After first iteration (DF)]{
+    \label{fig:about-frontier-df3}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-33.pdf}
   }
-  \subfigure[After second iteration]{
-    \label{fig:about-frontier-04}
-    \includegraphics[width=0.23\linewidth]{out/about-frontier-04.pdf}
+  \subfigure[After second iteration (DF)]{
+    \label{fig:about-frontier-df4}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-34.pdf}
+  } \\[2ex]
+  \subfigure[Initial graph]{
+    \label{fig:about-frontier-dfp1}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-11.pdf}
+  }
+  \subfigure[Marking initial affected vertices (DF-P)]{
+    \label{fig:about-frontier-dfp2}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-32.pdf}
+  }
+  \subfigure[After first iteration (DF-P)]{
+    \label{fig:about-frontier-dfp3}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-33.pdf}
+  }
+  \subfigure[After second iteration (DF-P)]{
+    \label{fig:about-frontier-dfp4}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-44.pdf}
+  } \\[2ex]
+  \subfigure[Initial graph]{
+    \label{fig:about-frontier-dt1}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-11.pdf}
+  }
+  \subfigure[Marking affected vertices (DT)]{
+    \label{fig:about-frontier-dt2}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-22.pdf}
+  }
+  \subfigure[After first iteration (DT)]{
+    \label{fig:about-frontier-dt3}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-22.pdf}
+  }
+  \subfigure[After second iteration (DT)]{
+    \label{fig:about-frontier-dt4}
+    \includegraphics[width=0.23\linewidth]{out/about-frontier-22.pdf}
   } \\[-2ex]
-  \caption{An example showcasing our improved \textit{Dynamic Frontier} approach. The initial graph has $12$ vertices and $16$ edges. The graph is updated with an edge insertion $(6, 8)$ and an edge deletion $(2, 1)$. Consequently, the outgoing neighbors of vertices $2$ and $6$ (i.e., vertices $1$, $3$, $8$, and $12$) are marked as affected (highlighted in yellow). In the first iteration, when computing the ranks of these affected vertices, it is observed that the relative change in rank of vertices $1$, $3$, $8$, and $12$ exceeds the frontier tolerance $\tau_f$ (indicated with a red border). Therefore, their outgoing neighbors (i.e., vertices $4$, $5$, $7$, $9$, $11$, and $12$) are also marked as affected. Vertices $1$, $3$, and $8$ are subsequently no longer marked as affected due to their relative rank change falling below the prune tolerance $\tau_p$. In the second iteration, the relative rank change of vertices $5$, $9$, $11$, and $12$ surpasses the frontier tolerance $\tau_f$, resulting in their outgoing neighbors (i.e., vertices $6$, $10$, and $11$) being marked as affected. Additionally, vertices $4$, $5$, $7$, $9$, and $12$ are no longer marked as affected as their relative rank change falls below prune tolerance $\tau_p$. In the following iteration, the rankings of affected vertices are updated once more. If the rank change of each vertex falls within the iteration tolerance $\tau$, indicating convergence, the algorithm terminates.}
+  \caption{An example showcasing our improved \textit{Dynamic Frontier (DF)} and \textit{Dynamic Frontier with Pruning (DF-P)} approaches, in subfigures (a)-(d) and (e)-(h) respectively, in contrast to the \textit{Dynamic Traversal (DT)} approach, shown in subfigures (i)-(l).}
   \label{fig:about-frontier}
 \end{figure*}
 
-\ignore{An example illustrating our improved \textit{Dynamic Frontier (DF)} approach. The initial graph has $12$ vertices and $16$ edges. The graph is updated with an edge insertion $(6, 8)$ and an edge deletion $(2, 1)$. Consequently, the outgoing neighbors of vertices $2$ and $6$ (i.e., vertices $1$, $3$, $8$, and $12$) are marked as affected (highlighted in yellow). In the first iteration, when computing the ranks of these affected vertices, it is observed that the change in rank of vertices $1$, $3$, $8$, and $12$ exceeds the frontier tolerance $\tau_f$ (indicated with a red border). Therefore, their outgoing neighbors (i.e., vertices $4$, $5$, $7$, $9$, $11$, and $12$) are also marked as affected. Vertices $1$, $3$, and $8$ are no longer marked as affected as the change in their rank is below the prune tolerance $\tau_p$. In the second iteration, the change in rank of vertices $5$, $9$, $11$, and $12$ exceeds the frontier tolerance $\tau_f$. Therefore, their outgoing neighbors (i.e., vertices $6$, $10$, and $11$) are marked as affected. Again, vertices $4$, $5$, $7$, $9$, $12$ are no longer marked as affected, as their change in rank falls below prune tolerance $\tau_p$. In the subsequent iteration, the ranks of affected vertices are again updated. If the change in rank of every vertex is within iteration tolerance $\tau$, the ranks of vertices have converged, and the algorithm terminates.}
+\ignore{An example showcasing our improved \textit{Dynamic Frontier (DF)} and \textit{Dynamic Frontier with Pruning (DF-P)} approaches. The initial graph has $16$ vertices and $23$ edges. The graph is updated with an edge insertion $(4, 12)$ and an edge deletion $(2, 1)$. Consequently, with DF and DF-P PageRank, the outgoing neighbors of vertices $2$ and $4$ (i.e., vertices $1$, $8$, $12$, and $14$) are marked as affected (shown with yellow fill). In the first iteration, when computing the ranks of these affected vertices, it is observed that the relative change in rank of vertices $1$, $8$, $12$, and $14$ exceeds the frontier tolerance $\tau_f$ (indicated with a red border). Therefore, their outgoing neighbors (i.e., vertices $3$, $5$, $9$, $10$, $14$, and $15$) are also marked as affected, with both DF and DF-P PageRank. In the second iteration, the relative rank change of vertices $3$, $5$, $9$, $14$, and $15$ surpasses the frontier tolerance $\tau_f$, resulting in their outgoing neighbors (i.e., vertices $4$, $6$, $10$, $15$, and $16$) being marked as affected. Additionally, with DF-P PageRank, vertices $1$, $8$, and $12$ are no longer marked as affected as their relative rank change falls below prune tolerance $\tau_p$. In the following iteration, the rankings of affected vertices are updated once more. If the rank change of each vertex falls within the iteration tolerance $\tau$, indicating convergence, the algorithm terminates. In contrast, the \textit{Dynamic Traversal (DT)} approach, marks all vertices reachable from $2$ and $4$ as affected. The ranks of this set of affected vertices are then updated in each iteration.}

@@ -8,6 +8,7 @@
 \usepackage{enumitem}
 
 %% Enable theorems
+\usepackage{amsmath}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 
@@ -55,45 +56,13 @@
 %% Ignore block
 \newcommand{\ignore}[1]{}
 
-%% Macros
-\newcommand{\Lou}{\textit{Louvain}}
-\newcommand{\LPA}{\textit{LPA}}
-\newcommand{\Hyb}{\textit{Hybrid Louvain-LPA}}
-\newcommand{\DelOrg}{\textit{$\Delta$-screening}}
-\newcommand{\Del}{P-DDS}
-\newcommand{\StaLou}{\textit{Static Louvain}}
-\newcommand{\NaiLou}{$\text{P-ND}_\text{L}$}
-\newcommand{\DelLou}{$\text{P-DDS}_\text{L}$}
-\newcommand{\FroLou}{$\text{P-DF}_\text{L}$}
-\newcommand{\StaLPA}{\textit{Static LPA}}
-\newcommand{\NaiLPA}{$\text{P-ND}_\text{LPA}$}
-\newcommand{\DelLPA}{$\text{P-DDS}_\text{LPA}$}
-\newcommand{\FroLPA}{$\text{P-DF}_\text{LPA}$}
-\newcommand{\FroHyb}{$\text{P-DF}_\text{H}$}
-
-%% Short names (PR)
-\newcommand{\Wbar}{Algorithm $\text{XX}_{\text{WBPR}}$}
-\newcommand{\Barf}{Algorithm $\text{XX}_{\text{BFPR}}$}
-\newcommand{\Sta}{Algorithm $\text{Static}_{\text{XXPR}}$}
-\newcommand{\Nai}{Algorithm $\text{ND}_{\text{XXPR}}$}
-\newcommand{\Tra}{Algorithm $\text{DT}_{\text{XXPR}}$}
-\newcommand{\Fro}{Algorithm $\text{DF}_{\text{XXPR}}$}
-\newcommand{\StaWbar}{Algorithm $\text{Static}_{\text{WBPR}}$}
-\newcommand{\StaBarf}{Algorithm $\text{Static}_{\text{BFPR}}$}
-\newcommand{\NaiWbar}{Algorithm $\text{ND}_{\text{WBPR}}$}
-\newcommand{\NaiBarf}{Algorithm $\text{ND}_{\text{BFPR}}$}
-\newcommand{\TraWbar}{Algorithm $\text{DT}_{\text{WBPR}}$}
-\newcommand{\TraBarf}{Algorithm $\text{DT}_{\text{BFPR}}$}
-\newcommand{\FroWbar}{Algorithm $\text{DF}_{\text{WBPR}}$}
-\newcommand{\FroBarf}{Algorithm $\text{DF}_{\text{BFPR}}$}
-
 
 
 
 \begin{document}
 
 %% Full title of the paper.
-\title[DF-PageRank: A Fast Incrementally Expanding and Contracting Approach for Updating PageRank on Dynamic Graphs]{DF-PageRank: A Fast Incrementally Expanding and Contracting Approach for Updating PageRank on Dynamic Graphs}
+\title[DF* PageRank: Improved Incrementally Expanding Approaches for Updating PageRank on Dynamic Graphs]{DF* PageRank: Improved Incrementally Expanding Approaches for Updating PageRank on Dynamic Graphs}
 
 %% Short title to be used in page headers (optional).
 % \title[short title]{full title}
@@ -119,7 +88,7 @@
 
 %% Short summary of the work to be presented in the article.
 \begin{abstract}
-PageRank is a popular centrality metric that assigns importance to the vertices of a graph based on its neighbors and their score. Efficient parallel algorithms for updating PageRank on dynamic graphs is crucial for various applications, especially as dataset sizes have reached substantial scales. This technical report presents our Dynamic Frontier approach. Given a batch update consisting of edge insertions and deletions, it progressively identifies affected vertices that are likely to change their ranks with minimal overhead. On a server equipped with a 64-core AMD EPYC-7742 processor, our Dynamic Frontier PageRank outperforms Static, Naive-dynamic, and Dynamic Traversal PageRank by $7.8\times$, $2.9\times$, and $3.9\times$ respectively - on uniformly random batch updates of size $10^{-7}|E|$ to $10^{-3}|E|$. In addition, our approach improves performance at an average rate of $1.8\times$ for every doubling of threads.
+PageRank is a widely used centrality measure that assesses the significance of vertices in a graph by considering their connections and the importance of those connections. Efficiently updating PageRank on dynamic graphs is essential for various applications due to the increasing scale of datasets. This technical report introduces our improved Dynamic Frontier (DF) and Dynamic Frontier with Pruning (DF-P) approaches. Given a batch update comprising edge insertions and deletions, these approaches iteratively identify vertices likely to change their ranks with minimal overhead. On a server featuring a 64-core AMD EPYC-7742 processor, our approaches outperform Static and Dynamic Traversal PageRank by $5.2\times$/$15.2\times$ and $1.3\times$/$3.5\times$ respectively - on real-world dynamic graphs, and by $7.2\times$/$9.6\times$ and $4.0\times$/$5.6\times$ on large static graphs with random batch updates. Furthermore, our approaches improve performance at a rate of $1.8\times$/$1.7\times$ for every doubling of threads.
 \end{abstract}
 
 
@@ -192,31 +161,8 @@ I would like to thank Prof. Kishore Kothapalli, Prof. Sathya Peri, and Prof. Hem
 
 \clearpage
 \appendix
-% \section{Additional Figures}
-\input{aa-figures}
+% \section{Appendix}
+\input{aa-appendix}
 \end{document}
 \endinput
 %% End of file.
-
-
-
-
-%% NOTES:
-%% - Parallelization seems to be not efficient for small batch updates.
-%% - Discuss about conflicting updates
-%% - 
-
-
-%% TODO:
-%% - Scale up the size of the graphs
-%% - Move experiments to a better server
-%% - Include a weak- and strong- scalabiilty plot: run the expt from 2 to 128 threads
-%% - overall space planning
-%% - add a few lines on novelty of the paper.
-%% - table comparison of related work
-%% - Include a section on preliminaries that talks about the various algorithmic ideas (Louvain, Label Propagation)
-
-%% Workplan:
-%% - KK -- Read Introduction, Related Work,
-%% - Dip Sankar -- Approach -- summarize the main algorithmic ideas,
-%% - Subhajit -- Results -- Plots, scalability, Dataset, experiments, implementation details,

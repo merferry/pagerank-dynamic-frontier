@@ -1,0 +1,29 @@
+\begin{figure*}[!hbt]
+  \centering
+  \subfigure[Overall Runtime]{
+    \label{fig:temporal-summary--runtime-overall}
+    \includegraphics[width=0.48\linewidth]{out/temporal-summary-runtime-overall.pdf}
+  }
+  \subfigure[Overall Error in ranks obtained]{
+    \label{fig:temporal-summary--error-overall}
+    \includegraphics[width=0.48\linewidth]{out/temporal-summary-error-overall.pdf}
+  } \\[2ex]
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-runtime-sx-mathoverflow.pdf}
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-error-sx-mathoverflow.pdf}
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-runtime-sx-askubuntu.pdf}
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-error-sx-askubuntu.pdf}
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-runtime-sx-superuser.pdf}
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-error-sx-superuser.pdf}
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-runtime-wiki-talk-temporal.pdf}
+  \includegraphics[width=0.48\linewidth]{out/temporal-summary-error-wiki-talk-temporal.pdf}
+  \subfigure[Runtime on each dynamic graph]{
+    \label{fig:temporal-summary--runtime-graph}
+    \includegraphics[width=0.48\linewidth]{out/temporal-summary-runtime-sx-stackoverflow.pdf}
+  }
+  \subfigure[Error in ranks obtained on each dynamic graph]{
+    \label{fig:temporal-summary--error-graph}
+    \includegraphics[width=0.48\linewidth]{out/temporal-summary-error-sx-stackoverflow.pdf}
+  } \\[-2ex]
+  \caption{Mean Runtime and Error in ranks obtained with \textit{Static}, \textit{Naive-dynamic (ND)}, \textit{Dynamic Traversal (DT)}, our improved \textit{Dynamic Frontier (DF)}, and our improved \textit{Dynamic Frontier with Pruning (DF-P)} PageRank on real-world dynamic graphs, with batch updates of size $10^{-5}|E_T|$ to $10^{-3}|E_T|$. Here, (a) and (b) show the overall runtime and error across all temporal graphs, while (c) and (d) show the runtime and rank error for each approach (relative to reference Static PageRank, see Section \ref{sec:measurement}). In (a), the speedup of each approach with respect to Static PageRank is labeled.}
+  \label{fig:temporal-summary}
+\end{figure*}
