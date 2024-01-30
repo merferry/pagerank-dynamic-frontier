@@ -1,4 +1,4 @@
-In the event of a batch update $\Delta^{t-} \cup \Delta^{t+}$ being relatively small compared to the total number of edges $|E|$, it is expected that only a small subset of vertices will undergo rank changes. To tackle this situation, our proposed approaches utilize an incremental process to identify affected vertices.
+In the event of a batch update $\Delta^{t-} \cup \Delta^{t+}$ being relatively small compared to the total number of edges $|E|$, it is expected that only a small subset of vertices will undergo rank changes. To tackle this situation, our proposed approaches utilize an incremental process to identify affected vertices and update their ranks.
 
 \input{src/fig-about-frontier}
 
@@ -89,7 +89,7 @@ Figure \ref{fig:adjust-prune} presents the mean speedup, compared to Static Page
 
 \subsection{Our DF* PageRank implementation}
 
-Algorithm \ref{alg:frontier} shows the pseudocode of our improved Dynamic Frontier (DF) and Dynamic Frontier with Pruning (DF-P) PageRank. Its takes as input the previous $G^{t-1}$ and current $G^t$ snapshot of the graph, edge deletions $\Delta^{t-}$ and insertions $\Delta^{t+}$ in the batch update, the previous rank vector $R^{t-1}$, and returns the updated ranks $R$.
+Algorithm \ref{alg:frontier} shows the pseudocode of our improved Dynamic Frontier (DF) and Dynamic Frontier with Pruning (DF-P) PageRank. It takes as input the previous $G^{t-1}$ and current $G^t$ snapshot of the graph, edge deletions $\Delta^{t-}$ and insertions $\Delta^{t+}$ in the batch update, the previous rank vector $R^{t-1}$, and returns the updated ranks $R$.
 
 The algorithm begins by initializing the current rank vector $R$ with the previous rank vector $R^{t-1}$ (line \ref{alg:frontier--initialize}), and marking the initially affected vertices based on edge deletions $\Delta^{t-}$ and insertions $\Delta^{t+}$ in parallel (lines \ref{alg:frontier--mark-begin}-\ref{alg:frontier--mark-end}). It then iteratively computes the rank $R[v]$ for each affected vertex $v$ (lines \ref{alg:frontier--compute-begin}-\ref{alg:frontier--compute-end}). This computation is performed in parallel, considering the incoming edges $G^t.in(v)$. Depending on whether DF or DF-P PageRank is selected, the corresponding formula for rank calculation is applied (lines \ref{alg:frontier--formula-begin}-\ref{alg:frontier--formula-end}). The algorithm then checks if the relative change in rank $\Delta r / \max(r, R[v])$ exceeds the frontier tolerance $\tau_f$, marking out-neighbor vertices as affected if so. Additionally, with DF-P PageRank, if the relative change in rank lies within the prune tolerance $\tau_p$, the vertex $v$ is marked as not affected. The iteration continues until either the maximum change in ranks $\Delta R$ falls below the iteration tolerance $\tau$, or the maximum number of iterations $MAX\_ITERATIONS$ is reached. Finally, the algorithm returns the final rank vector $R$ (line \ref{alg:frontier--return}).
 

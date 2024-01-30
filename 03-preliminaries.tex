@@ -15,7 +15,7 @@ Dead ends, also known as dangling vertices, pose a challenge in PageRank computa
 
 \begin{equation}
 \label{eq:pr}
-    R[v] = \alpha \times \sum_{u \in G.in(v)} \frac{R[u]}{|G.out(u)|} + \frac{1 - \alpha}{n}
+    R[v] = \alpha \times \sum_{u \in G.in(v)} \frac{R[u]}{|G.out(u)|} + \frac{1 - \alpha}{|V|}
 \end{equation}
 
 
@@ -46,5 +46,5 @@ This\ignore{straightforward} approach involves updating vertex ranks in dynamic 
 \subsubsection{Dynamic Traversal approach}
 \label{sec:about-traversal}
 
-Initially proposed by Desikan et al. \cite{rank-desikan05}, this approach involves skipping the processing of vertices whose ranks are unlikely to be updated by the given batch update. For each edge deletion or insertion $(u, v)$ in the batch update, all vertices reachable from vertex $u$ in either graph $G^{t-1}$ or $G^t$ are marked as affected, using DFS or BFS.\ignore{Giri et al. \cite{rank-giri20} have explored the \textit{Dynamic Traversal} approach in the hybrid CPU-GPU setting. On the other hand, Banerjee et al. \cite{rank-sahu22} have explored this approach in the CPU and GPU settings separately where they compute the ranks of vertices in topological order of strongly connected components (SCCs) to minimize unnecessary computation. They borrow this ordered processing of SCCs from the original static algorithm proposed by Garg et al. \cite{rank-garg16}.}
+Initially proposed by Desikan et al. \cite{rank-desikan05}, this approach involves skipping the processing of vertices whose ranks cannot be impacted by the given batch update. For each edge deletion or insertion $(u, v)$ in the batch update, all vertices reachable from vertex $u$ in either graph $G^{t-1}$ or $G^t$ are marked as affected, using DFS or BFS.\ignore{Giri et al. \cite{rank-giri20} have explored the \textit{Dynamic Traversal} approach in the hybrid CPU-GPU setting. On the other hand, Banerjee et al. \cite{rank-sahu22} have explored this approach in the CPU and GPU settings separately where they compute the ranks of vertices in topological order of strongly connected components (SCCs) to minimize unnecessary computation. They borrow this ordered processing of SCCs from the original static algorithm proposed by Garg et al. \cite{rank-garg16}.}
 % Additionally, we provide the pseudocode for \textit{Dynamic Traversal With-barrier} PageRank (\TraWbar{}), which can be referred to in Algorithm \ref{alg:with-barrier-dynamic-traversal}.
